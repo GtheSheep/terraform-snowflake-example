@@ -1,0 +1,31 @@
+name: Terraform Snowflake Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  RunChecks:
+    name: Run Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get Terraform version
+        run: echo "TERRAFORM_VERSION=$(cat .terraform-version)" >> "$GITHUB_ENV"
+        id: set-terraform-version
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform init
+        id: terraform-init
+        run: terraform init
+
+      - name: Terraform apply
+        id: terraform-apply
+        run: terraform apply -auto-approve
